@@ -78,3 +78,29 @@ class SimpleAE(nn.Module):
         return x
 ```
 The code defines a simple autoencoder neural network (AE) with an encoder and decoder. The encoder consists of convolutional layers with batch normalization and ReLU activation, which reduce the input's dimensionality. The decoder uses transpose convolutions, batch normalization, and a sigmoid activation to reconstruct the input from the encoded representation.
+```py
+def fit(model, dataloader, epoch):
+    model.train()
+    running_loss = 0.0
+    for i, data in tqdm(enumerate(dataloader), total=int(len(train_data)/dataloader.batch_size)):
+        blur_image = data[0]
+        sharp_image = data[1]
+        blur_image = blur_image.to(device)
+        sharp_image = sharp_image.to(device)
+        optimizer.zero_grad()
+        outputs = model(blur_image)
+        loss = criterion(outputs, sharp_image)
+
+        # backpropagation
+        loss.backward()
+
+        # update the parameters
+        optimizer.step()
+        running_loss += loss.item()
+
+    train_loss = running_loss/len(dataloader.dataset)
+    print(f"Train Loss: {train_loss:.5f}")
+
+    return train_loss
+```
+This code defines the training function for the model using a given dataloadder. It iterates through the training data, computes the loss between the model's predictions and the ground truth, performs backpropagation to update model optimizing the model during the training process.
