@@ -26,3 +26,26 @@ python deblur.py
 python test.py
 ```
 5. By running above command, Tkinter GUI window will open where you can pass the any blurred image to get an output of deblurred image.
+
+### Code Snippet
+```py
+class CNN(nn.Module):
+    def __init__(self):
+        super(CNN, self).__init__()
+
+        self.conv1 = nn.Conv2d(128, 128, kernel_size=5, padding=1)
+        self.bn1 = nn.BatchNorm2d(128)
+        self.conv2 = nn.Conv2d(128, 64, kernel_size=3, padding=1)
+        self.bn2 = nn.BatchNorm2d(64)
+        self.conv3 = nn.Conv2d(64, 3, kernel_size=1, padding=0)
+
+    def forward(self, x):
+        residual = x
+        x = F.relu(self.bn1(self.conv1(x)))
+        x = F.relu(self.bn2(self.conv2(x)))
+        x = self.conv3(x)
+        x += residual
+
+        return x
+```
+The code defines a convolutional neural network (CNN) class with three convolutional layers and batch normalization. It takes an input tensor 'x', applies convolutions with activation functions and batch normalization, and adds the original input as a residual connection.
