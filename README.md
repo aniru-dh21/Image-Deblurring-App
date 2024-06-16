@@ -182,4 +182,5 @@ class ImageDeblurringApp:
         self.deblurred_image_label.image = deblurred_image
 
 ```
-This code defines an image deblurring application using the Tkinter Library. It allows users to select an image, applies a pre-trained deep learning model to deblur the image, and displays the original and deblurred images. The application provides intuitive user interface for image deblurring.
+This code defines an image deblurring application using the Tkinter Library. It allows users to select an image, applies a pre-trained deep learning model to deblur the image, and displays the original and
+deblurred images. The application provides intuitive user interface for image deblurring.
