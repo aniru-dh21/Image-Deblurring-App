@@ -2,10 +2,17 @@ import cv2
 import models
 import torch
 import tkinter as tk
+import yaml
 from tkinter import filedialog
 from PIL import ImageTk, Image
 from torchvision.transforms import transforms
 from torchvision.utils import save_image
+
+# Read parameters
+with open("config.yaml", "r") as file:
+    config = yaml.safe_load(file)
+
+path = config.get("path", "C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App")
 
 def save_decoded_image(img, name):
     img = img.view(img.size(0), 3, 224, 224)
@@ -77,7 +84,7 @@ class ImageDeblurringApp:
         # Load the model
         device = 'cpu'
         model = models.SimpleAE().to(device).eval()
-        model.load_state_dict(torch.load('C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/outputs/model.pth'))
+        model.load_state_dict(torch.load(path + '/outputs/model.pth'))
 
         # Deblur the image
         with torch.no_grad():

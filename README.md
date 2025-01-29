@@ -8,6 +8,13 @@
 - **Deep Learning Framework**: Pytorch
 - **Image Processing Libraries**: OpenCV, Scikit-image, and Pillow
 
+## Instalation
+Among others, be sure to have installed the following libraries:
+```bash
+python3 -m pip install -U pyyaml scikit-learn 
+sudo apt-get install python3-tk
+```
+
 ## Getting Started
 1. Clone the repository into your local system
 ```bash
@@ -17,15 +24,19 @@ git clone https://github.com/aniru-dh21/Image-Deblurring-App.git
 ```bash
 cd ./src 
 ```
-3. To run the application first you have to train the model, so first run the following with the command;
+2. Specify your custom configuration for training and testing the model:
+```bash
+nano ./config.yaml 
+```
+4. To run the application first you have to train the model, so first run the following with the command;
 ```py
 python deblur.py
 ```
-4. After completion of execution, you can now test the application using the following command:
+5. After completion of execution, you can now test the application using the following command:
 ```py
 python test.py
 ```
-5. By running above command, Tkinter GUI window will open where you can pass the any blurred image to get an output of deblurred image.
+6. By running above command, Tkinter GUI window will open where you can pass the any blurred image to get an output of deblurred image.
 
 ### Code Snippet
 ```py
