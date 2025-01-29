@@ -16,6 +16,7 @@ import torch.optim as optim
 import time 
 import argparse
 import models
+import yaml
 
 # Importing the required packages
 from tqdm import tqdm 
@@ -24,14 +25,15 @@ from torchvision.transforms import transforms
 from torchvision.utils import save_image
 from sklearn.model_selection import train_test_split
 
-# Constructing the argument parser
-parser = argparse.ArgumentParser()
-parser.add_argument('-e', '--epochs', type=int, default=60,
-                    help='number of epochs to train the model for')
-args = vars(parser.parse_args())
+# Read parameters
+with open("config.yaml", "r") as file:
+    config = yaml.safe_load(file)
+
+epochs = config.get("epochs", 60) 
+path = config.get("path", "C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App")
 
 # helper functions
-image_dir = 'C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/outputs/saved_images'
+image_dir = path + '/outputs/saved_images'
 os.makedirs(image_dir, exist_ok=True)
 
 # Functions for viewing the image in size of 224 x 224
@@ -48,9 +50,9 @@ print(device)
 batch_size = 3
 
 # Directories for training images and CNN, Autoencoders models
-gauss_blur = os.listdir('C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/input/gaussian_blurred')
+gauss_blur = os.listdir(path + '/input/gaussian_blurred')
 gauss_blur.sort()
-sharp = os.listdir('C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/input/sharp')
+sharp = os.listdir(path + '/input/sharp')
 sharp.sort()
 
 # This is used for checking that whether the blur image is regarding to the corresponding sharp image.
@@ -89,13 +91,13 @@ class DeblurDataset(Dataset):
         return (len(self.X))
 
     def __getitem__(self, i):
-        blur_image = cv2.imread(f"C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/input/gaussian_blurred/{self.X[i]}")
+        blur_image = cv2.imread(path + f"/input/gaussian_blurred/{self.X[i]}")
 
         if self.transforms:
             blur_image = self.transforms(blur_image)
 
         if self.y is not None:
-            sharp_image = cv2.imread(f"C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/input/sharp/{self.y[i]}")
+            sharp_image = cv2.imread(path + f"/input/sharp/{self.y[i]}")
             sharp_image = self.transforms(sharp_image)
             return (blur_image, sharp_image)
         else:
@@ -166,13 +168,13 @@ def validate(model, dataloader, epoch):
 
             # based on the epoch number used for training and evaluation
             if epoch == 0 and i == (len(val_data)/dataloader.batch_size)-1:
-                save_decoded_image(sharp_image.cpu(), name=f"C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/outputs/saved_images/sharp[epoch].jpg")
-                save_decoded_image(blur_image.cpu(), name=f"C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/outputs/saved_images/blur[epoch].jpg")
+                save_decoded_image(sharp_image.cpu(), name=path + f"/outputs/saved_images/sharp[epoch].jpg")
+                save_decoded_image(blur_image.cpu(), name=path + f"/outputs/saved_images/blur[epoch].jpg")
 
         val_loss = running_loss/len(dataloader.dataset)
         print(f"Val Loss: {val_loss:.5f}")
 
-        save_decoded_image(outputs.cpu().data, name=f"C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/outputs/saved_images/val_deblurred[epoch].jpg")
+        save_decoded_image(outputs.cpu().data, name=path + f"/outputs/saved_images/val_deblurred[epoch].jpg")
 
         return val_loss
 
@@ -180,8 +182,8 @@ def validate(model, dataloader, epoch):
 train_loss = []
 val_loss = []
 start = time.time()
-for epoch in range(args['epochs']):
-    print(f"Epoch {epoch+1} of {args['epochs']}")
+for epoch in range(epochs):
+    print(f"Epoch {epoch+1} of {epochs}")
     train_epoch_loss = fit(model, trainloader, epoch)
     val_epoch_loss = validate(model, valloader, epoch)
     train_loss.append(train_epoch_loss)
@@ -198,9 +200,9 @@ plt.plot(val_loss, color='red', label='validation loss')
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend()
-plt.savefig('C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/outputs/loss.png')
+plt.savefig(path + '/outputs/loss.png')
 plt.show()
 
 # save the model to disk
 print('Saving model...')
-torch.save(model.state_dict(), 'C:/Users/ANIRUDH/OneDrive/Desktop/Image Deblurring App/outputs/model.pth')
+torch.save(model.state_dict(), path + '/outputs/model.pth')
